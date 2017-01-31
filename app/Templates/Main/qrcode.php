@@ -13,5 +13,5 @@ QRcode::png($this->qr_code, ROOT.'/img/temp.png');
 
 <div class="qr-code">
     <h1>Je code is</h1>
-    <img class="qr-image" src="http://localhost/SchoolProjectVanKoen/img/temp.png"/>
+    <img class="qr-image" src="http://<?= BASE ?>/img/temp.png"/>
 </div>
