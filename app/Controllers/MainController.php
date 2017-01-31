@@ -34,21 +34,42 @@ class MainController extends BaseController
         $this->set('hi', 'Hallo woreld');
     }
 
-    public function qrcode() {
+    public function qrcode()
+    {
         //Als gebruiker niet is ingelogd laat ook niks zien. Redirect
-        if($this->Auth->getSession() == null) {
+        if ($this->Auth->getSession() == null) {
             $this->Notification->error('Niet toegestaan');
             $this->redirect(array('action' => 'index'));
             return;
         }
         $customers = TableLoader::get('customers');
-        $result = $customers->query()->select(['qr_code','username'])
+        $user = $customers->query()->select(['qr_code', 'username'])
             ->where(['username=' => $this->Auth->getSession()['username']])->execute();
-        if(isset($result[0])) {
-            $this->set('qr_code', $result[0]->get('username'). ':'.$result[0]->get('qr_code'));
+        if (!isset($user[0])) {
+            $this->redirect(array('action' => 'index'));
             return;
         }
-        $this->redirect(array('action' => 'index'));
+
+        $this->set('qr_code', $user[0]->get('username') . ':' . $user[0]->get('qr_code'));
+        $apparaten = array();
+
+        $history_table = TableLoader::get('history');
+        $history = $history_table->query()->select()->where(['customer_id=' => $this->Auth->getSession()['id']])->execute();
+        $device_table = TableLoader::get('device');
+        $devices = $device_table->query()->select()->execute();
+        if(!empty($history)) {
+            foreach ($history as $record) {
+                foreach ($devices as $device) {
+                    if($device->get('id') != $record->get('device_id')) continue;
+                    array_push($apparaten, [
+                        'name' => $device->get('name'),
+                        'image' => $device->get('image'),
+                        'created' => $record->get('created'),
+                    ]);
+                }
+            }
+        }
+        $this->set('devices', $apparaten);
 
     }
 
