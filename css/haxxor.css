@@ -1,0 +1,14 @@
+.btn-xlg {
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.main-content {
+    margin-top: 32px;
+    margin-bottom: 32px;
+}
+
+body {
+	background-color: black;
+	color: lime;
+}
